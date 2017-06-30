@@ -1,0 +1,382 @@
+---
+title: "KEIResearch2016"
+author: "Kang Sung Won"
+date: '2017 6 23 '
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Intro
+
+In this memo, we look into what methods are used in KEI Research. 
+
+First, we check the share of Quantitative analysis. Esepcially Statistical analysis and modeling. These two represents two main apporaches in Quantitative analysis. Both methods try to find evidences to test working hypothesis. Statistical analysis assumes that the data containes uncertainty, and if the evidences are strong enough to support/reject working hypothesis considering uncertainties. Modelling usually focus on the fundamental relations between variables and doesn't care much about uncertainties. Models usually abstracts real world into key relations and implicitly assumes that the uncertainties will average out in the long run and the key relations will survive. (Noise and Signal)
+
+Since Machine Learning uses data to get answers, it is directly related to Quantitative analysis. To find out which Sector/Type of Environmental Research can make use of Machine Learning, we should check which part uses Quantitative Reasearch first. 
+
+```{r lib}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+library(knitr)
+EnvResearch <- read_csv("EnvResearch_0619.csv")
+zerotoNA=function(x){
+  x[is.na(x)]=0
+  return(x)}   
+EnvResearch$Method[EnvResearch$Method=="Econometrics"]="STATANAL"
+```
+
+# Method Frequency.
+
+## Overall
+
+Overall, we see the most freuqntly used method is Literature Review. And STATANAL and Modelling comes the second and the third. Applying 'quantitative research' generously, we find that 'systemanalysis' and 'scenario' can be thought a form of quantitative research, since these two want to get answers using data. Together almost 30% of KEI 2016 Research could have used Machine Learning. 
+
+```{r MethodFreq}
+STFreq=EnvResearch %>% group_by(Section,Type) %>% summarise(F.S.T=n()) %>%  spread(key=Type,value=F.S.T)%>% mutate_all(zerotoNA)
+MethodFrequency=EnvResearch %>% group_by(Section,Type,Method) %>% summarise(FM=n()) 
+
+
+
+
+# Method Frequency Overall
+MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Method) %>% 
+  summarise(Sum.M=sum(FM)) %>% 
+  arrange(desc(Sum.M)) %>% 
+  mutate(Sum.All=sum(Sum.M)) %>% 
+  mutate(R.M=round(Sum.M/Sum.All,digits=3)) %>% 
+  select(-3) %>% kable() 
+```
+
+
+## By Section and Type
+
+Among sectors, AirClimate, Water, ETC three sectors has highest Quantitative method share(STATANAL+Modeling). AirClimate has high share in both Modeling and STATANAL, and Water has high share in STATANAL. ETC has the third largest share in STATANAL 17.6% and 5.6% of modeling. Especially, heavy use of Modling makes AirClimate most quantitative research field. 
+
+
+
+```{r MFreqSec}
+# Method Frequncey by Section
+MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Section,Method) %>% 
+  summarize(Sum.M.S.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Section) %>% 
+  mutate(Sum.S=sum(Sum.M.S.T)) %>% 
+  mutate(R.M.S=round(Sum.M.S.T/Sum.S,digits=3)) %>% 
+  filter(Sum.S>5) %>%
+  select(c(1,2,5)) %>% 
+  spread(key=Section,value=R.M.S) %>% mutate_all(zerotoNA) %>%
+  kable()
+
+MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Section,Method) %>% 
+  summarize(Sum.M.S.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Section) %>% 
+  mutate(Sum.S=sum(Sum.M.S.T)) %>% 
+  mutate(R.M.S=round(Sum.M.S.T/Sum.S,digits=3)) %>% 
+  filter(Sum.S>5) %>% filter(Method=="STATANAL"|Method=="Modeling"|Method=="SystemAnal"|Method=="Scenario") %>%
+  spread(key=Method,value=R.M.S) %>% mutate_all(zerotoNA) %>% mutate(Qm=STATANAL+Modeling+SystemAnal+Scenario) %>% group_by(Section) %>% summarise(Qm.S=sum(Qm)) %>% arrange(desc(Qm.S))
+
+#Econ and Model share by section
+Qshare.S=MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Section,Method) %>% 
+  summarize(Sum.M.S.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Section) %>% 
+  mutate(Sum.S=sum(Sum.M.S.T)) %>% 
+  mutate(R.M.S=round(Sum.M.S.T/Sum.S,digits=3)) %>% filter(Sum.S>5)%>%
+  select(c(1,2,5)) %>%
+  spread(key=Method,value=R.M.S) %>% 
+  mutate(Quan=sum(zerotoNA(STATANAL),zerotoNA(Modeling),zerotoNA(SystemAnal),zerotoNA(Scenario))) %>%
+  select(c(1,6,9,11,13,15)) %>% 
+  mutate_all(zerotoNA) 
+
+kable(Qshare.S)
+
+# Econ and Model share : take out Sections less than 5 obs
+MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Section,Method) %>% 
+  summarize(Sum.M.S.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Section) %>% 
+  summarise(Sum.S=sum(Sum.M.S.T)) %>% left_join(Qshare.S,by="Section") %>% filter(Sum.S>5) %>% arrange(desc(Quan)) %>% mutate_all(zerotoNA) %>% kable()
+
+#Quant share by section and type
+
+Q.Total=MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Type,Section) %>% 
+  mutate(Sum.M.S.T=sum(FM)) %>%
+  spread(key=Method,value=FM) %>%
+  mutate_all(zerotoNA) %>%
+  mutate(Sum.Q=STATANAL+Modeling+SystemAnal+Scenario) %>%
+  select(1,2,3,17)%>%
+  mutate(R.Q=round(Sum.Q/Sum.M.S.T,digits=3)) %>%
+  filter(Sum.Q>0)%>%
+  select(1,2,4)
+
+Q.Total %>% spread(key=Type,value=Sum.Q)%>% mutate_all(zerotoNA)
+
+R.Q=MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Type,Section) %>% 
+  mutate(Sum.M.S.T=sum(FM)) %>%
+  spread(key=Method,value=FM) %>%
+  mutate_all(zerotoNA) %>%
+  mutate(Sum.Q=STATANAL+Modeling+SystemAnal+Scenario) %>%
+  select(1,2,3,17)%>%
+  mutate(R.Q=round(Sum.Q/Sum.M.S.T,digits=3)) %>% filter(Sum.M.S.T>5 & R.Q>0) %>%
+  select(1,2,5)
+R.Q %>% spread(key=Type,value=R.Q)%>% mutate_all(zerotoNA)
+  
+Q.F=ggplot(Q.Total,aes(Type,Section))+geom_tile(aes(fill=Sum.Q),color="white")+scale_fill_gradient(low="white",high="steelblue")
+Q.F
+ggsave(Q.F,file="Q.F.png")
+Q.R=ggplot(R.Q, aes(Type,Section))+geom_tile(aes(fill=R.Q),color="white")+scale_fill_gradient(low="white",high="steelblue")
+Q.R
+ggsave(Q.R,file="Q.R.png")
+```
+
+There's no obvious pattern in Method empirical distribution among Types. They all can use Machine Learning when it has its benefits. Among them, 'Control' has the larges share of Quantiative methods. Especially, control has heavy use of modeling, which represents frequent use of models in evaluting benefits/cost of policies. 
+
+```{r MFreqType}
+# Method Frequncey by Type
+MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Type,Method) %>% 
+  summarize(Sum.M.T.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Type) %>% 
+  mutate(Sum.T=sum(Sum.M.T.T)) %>% 
+  mutate(R.M.T=round(Sum.M.T.T/Sum.T,digits=3)) %>% 
+  select(c(1,2,5)) %>% 
+  spread(key=Type,value=R.M.T) %>% mutate_all(zerotoNA) %>%
+  kable()
+
+
+
+
+Qshare.T=MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Type,Method) %>% 
+  summarize(Sum.M.S.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Type) %>% 
+  mutate(Sum.S=sum(Sum.M.S.T)) %>% 
+  mutate(R.M.S=round(Sum.M.S.T/Sum.S,digits=3)) %>% 
+  select(c(1,2,5)) %>%
+  spread(key=Method,value=R.M.S) %>% 
+  mutate(Quan=sum(zerotoNA(STATANAL),zerotoNA(Modeling))) %>%
+  select(c(1,6,9,11,13,15)) %>% 
+  mutate_all(zerotoNA) 
+
+
+MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Type,Method) %>% 
+  summarize(Sum.M.T.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Type) %>% 
+  summarise(Sum.T=sum(Sum.M.T.T)) %>% left_join(Qshare.T,by="Type") %>% filter(Sum.T>5) %>% arrange(desc(Quan)) %>% mutate_all(zerotoNA) %>% kable()
+
+```
+
+
+## Budget Weighted
+
+To check the relative importance, we obtained budget weighted share. It appears that Lit share increases, which implies that our bigger projects are more likely to use Qualitative research. So, smaller projects are more likley to be able to make use of Machine Learning. 
+
+But in AirClimate sector, big budget projects are more likley to use Modeling. So, AirClimate is the sector that small and large budget projects can get some benefit by using Machine Learning. (Potentially)
+
+```{r MethodF.budgetweited}
+
+# Loading budget data
+#library(readr)
+EnvResearch_budget = read_csv("EnvResearch_budget.csv")
+EnvResearch_budget$index2=(1:(dim(EnvResearch_budget)[1]))
+R.Budget= EnvResearch_budget %>% select(1:2,5)
+R.Method.Budget =left_join(EnvResearch,R.Budget,by="index2") %>% filter(!is.na(Budget))
+# Take average for double counting
+R.Method.Budget.2=R.Method.Budget %>%
+  group_by(index2) %>% 
+  mutate(nBudget=n()) %>% 
+  mutate(m.Budget=Budget/nBudget)
+  
+M.F.Budget=R.Method.Budget.2 %>% group_by(Section,Type,Method) %>% summarise(FM=n(),Sum.Budget=sum(m.Budget)) 
+```
+
+```{r Budgetweith.Freq.Result}
+
+# Weighted Method Frequency Overall
+M.F.Budget %>% 
+  ungroup() %>% 
+  group_by(Method) %>% 
+  summarise(Sum.M=sum(FM),Sum.Budget.All=sum(Sum.Budget)) %>% 
+  mutate(w.M=Sum.M*(Sum.Budget.All))%>%
+  mutate(w.R.M=round(w.M/sum(w.M),digits=3)) %>%
+  arrange(desc(w.R.M)) %>% 
+#  mutate(Sum.All=sum(Sum.M)) %>% 
+#  mutate(R.M=round(Sum.M/Sum.All,digits=3)) %>% 
+  select(-3) %>% kable() 
+
+# Weighted Method Frequncy by Sector
+M.F.Budget %>% 
+  ungroup() %>% 
+  group_by(Section,Method) %>% 
+  summarize(Sum.M.S.T=sum(FM),Sum.Budget.All=sum(Sum.Budget)) %>% 
+  ungroup() %>% 
+  group_by(Section) %>% 
+  mutate(w.M.S=Sum.M.S.T*(Sum.Budget.All)) %>% 
+  mutate(w.R.M.S=round(w.M.S/sum(w.M.S),digits=3))  %>%
+  select(c(1,2,6)) %>% 
+  spread(key=Section,value=w.R.M.S) %>% mutate_all(zerotoNA) %>%
+  kable()
+
+# Weighted Method Frequncy by Type
+M.F.Budget %>% 
+  ungroup() %>% 
+  group_by(Type,Method) %>% 
+  summarize(Sum.M.S.T=sum(FM),Sum.Budget.All=sum(Sum.Budget)) %>% 
+  ungroup() %>% 
+  group_by(Type) %>% 
+  mutate(w.M.T=Sum.M.S.T*(Sum.Budget.All)) %>% 
+  mutate(w.R.M.T=round(w.M.T/sum(w.M.T),digits=3))  %>%
+  select(c(1,2,6)) %>% 
+  spread(key=Type,value=w.R.M.T) %>% mutate_all(zerotoNA) %>%
+  kable()
+```
+
+# Quantitative Research
+
+In this section, we selected researches used 'STATANAL, Modeling, Scenario, Systemanal' (four) methods. These are more loosely defined 'Quantitiative Analysis'. Qualitative methods are ' "TextMining", "Case","Index","Lit","SampleStats","SpecialCouncil","DB","Record"'. 
+
+- Record reports certain activity. 
+- TextMining, Survey, SpecialCouncil, DB collects data for further use. Analysis is not the key goal. - Case(Study), Lit are typical qualitative analysis methods. 
+- SampleStats and Index are not easy to determine. 
+    + But Index researches are more focused on contruction Index data, which is similar to DB.  
+    + And SampleStates collects data and produce quantitative results, but the choice of construction method and interpretation are more likely to depend on intiution. Not quantitative analysis. 
+ 
+Then we left with four methods mentioned above. SystemAnalysis builds up causility map throuh intiution, and assigned functions for each causility relation and calculate the objective quantitative results. There resulst are used in analyzing research hypothesis. Even though the causility map building is qualitatively done, the rest follows quantitative analysis protocol. Scenario is also tricky. Scenario analysis usually make use of a lot of relational equations to come up with all-encompasing statistics, and use scenarios to vary input data to come up with scenario-dependent output. Based on the results, some inferences are made. So, it doesn't have solid micro-foundation, but it tests the results with variations called scenarios. Even though scenario themeselves are made from intuition, the inferenced is checked with varying stats. So it follows quantitative reserach protocol. 
+
+## Overall
+
+1. 56% of Quantitative Study is doing Prediction. That show the main demand for the quantitative study in policy analysis. It wants prediction more that proof. It might not what would be expected, but it is the reality. The causaulity finding was the next. In terms of methods, Linear Regression, SCENARIO and SECTOR model three methods are most frequently used quantitative methods. 
+```{r QR}
+# Qunatitative Research
+QResearch=read_csv("QRESEARCH.csv")
+unique(QResearch$Method) %>% print()
+QResearch$ANALYSIS.BIG=QResearch$ANALYSIS
+QResearch$ANALYSIS.BIG[str_detect(QResearch$ANALYSIS,fixed("MODEL"))]="SECTORMODEL"
+QResearch$ANALYSIS.BIG[str_detect(QResearch$ANALYSIS,fixed("CLUSTER"))|str_detect(QResearch$ANALYSIS,fixed("ANOVA"))]="CLUSTER/ANOVA"
+QResearch$ANALYSIS.BIG[str_detect(QResearch$ANALYSIS,fixed("LOGIT"))|str_detect(QResearch$ANALYSIS,fixed("PROBIT"))]="LIMDEP.MLE"
+QResearch$ANALYSIS.BIG[str_detect(QResearch$ANALYSIS,fixed("REGRESSION"))]="Lin.REGRESSION"
+QResearch$ANALYSIS.BIG[str_detect(QResearch$ETC,fixed("CVM"))]="CVM"
+
+ANAL.F=QResearch %>% group_by(PURPOSE,ANALYSIS.BIG) %>% summarise(N.ANA=n()) %>% ungroup() 
+ANAL.F %>% group_by(PURPOSE) %>% summarise(Sum.P=sum(N.ANA)) %>% arrange(desc(Sum.P)) %>% mutate(R.P=round(Sum.P/sum(Sum.P),digits=3)) %>% kable()
+ANAL.F %>% group_by(ANALYSIS.BIG) %>% summarise(Sum.A=sum(N.ANA)) %>% arrange(desc(Sum.A)) %>% mutate(R.A=round(Sum.A/sum(Sum.A),digits=3)) %>% kable()
+
+
+```
+
+## QMethod by Purpose
+
+And it becomes clear that CLUSTER-ANOVA is the most favored method in find correlation(80%), and SCENARIO analysis is the most favoered method in prediction(28.6%). In IMPULSERESPONSE analysis, Linear Regression, CGE, and SECOTRAL MODELS are three most favored methods(16.7% each).
+
+Machine learning can be useful in Predictions. This is what supervised learning machine learning algorithms are build for. Especially heavy reliance on SCENARIO analysis in Prediction shows that we have a large room for improvement in Prediction by using Machine Learning. Machine Learning is well equiped for predcting variables with large number of featuers and large number of observations. It can catch non--standard relations using data. 
+
+We use scenarios when we don't have pre-determined relationship between inputs and outputs of model. In SCENARIO apporach, we build some relations, obtain output predictions under various input variable values, and we summarize the output. Their relations are typically pre--determined, and inputs vary according to scenarios. So, the input-output relation is open for authors' discretion, as well as SCENARIO buildup. Since Machine Learning doesn't not pre-determine Input output relation, it can capture the most likely input-output relationship. So, it can limit author's descretion in SCENARIO analysis. 
+
+CLUSTER analysis is most freqnetnly used UNSUPERVISED-Learning in Machine Learning method. So the current correlation analysis can be upgraded using Machine Learning Cluster analysis like k-mean cluster and Supporting Vector Mechanism.
+
+IMPULSERESPONSES are least likley supported by machine learning. Since these analysis isolate the structural relations between input and output using micro--foundation, they are fundamentally different from Machine Learning. Machine Learning do not impose structered relationship. It only provides very generic form of relationship and let the data decide the specificts. Still, Regression Tree approach can be used for this purpose. And Regression Tree has some advantage because it can 'find' impulse-response relation fit for the data. 
+
+```{r QR.P}
+ANAL.F %>% group_by(ANALYSIS.BIG,PURPOSE) %>% summarise(Sum.A.P=sum(N.ANA)) %>% ungroup() %>% group_by(PURPOSE) %>% mutate(R.A.P=round(Sum.A.P/sum(Sum.A.P),digits=3)) %>% select(-3) %>% spread(key=PURPOSE,value=R.A.P) %>% mutate_all(zerotoNA) 
+
+ANAL.F.P=QResearch %>% 
+#  filter(ANALYSIS.BIG!="CVM") %>% 
+  group_by(PURPOSE,ANALYSIS.BIG) %>% 
+  summarise(N.ANA=n()) %>% 
+  ungroup() 
+
+ANAL.F.P %>% 
+  group_by(ANALYSIS.BIG,PURPOSE) %>% 
+  summarise(Sum.A.P=sum(N.ANA)) %>% 
+  ungroup() %>% 
+  group_by(PURPOSE) %>% 
+  mutate(R.A.P=round(Sum.A.P/sum(Sum.A.P),digits=3)) %>% 
+  select(-3) %>% 
+  spread(key=PURPOSE,value=R.A.P) %>% 
+  mutate_all(zerotoNA) %>%
+  kable()
+
+ANAL.F.P.G=ANAL.F.P %>% 
+  group_by(ANALYSIS.BIG,PURPOSE) %>% 
+  summarise(Sum.A.P=sum(N.ANA)) %>% 
+  ungroup() %>% 
+  group_by(PURPOSE) %>% 
+  mutate(R.A.P=round(Sum.A.P/sum(Sum.A.P),digits=3)) 
+ANAL.F.P.graph= ANAL.F.P.G %>% ggplot(aes(x=ANALYSIS.BIG,y=R.A.P))+geom_col()+coord_flip()+facet_wrap(~PURPOSE)
+ANAL.F.P.graph
+save(ANAL.F.P.graph,file="ANAL.F.P.png")
+```
+
+## Quantitative Method by Sector
+
+Among Sectors, 'WASTE(50%)','Nature(33%)','AirClimate'(14.3%),'Water(12.5%), use SCENARIO analysis more often than othe Sectors. These Sectors can be improved by using Machine Learing.
+
+```{r QR.S}
+ANAL.F.S=QResearch %>% 
+  #  filter(ANALYSIS.BIG!="CVM") %>% 
+  group_by(Section,ANALYSIS.BIG) %>% 
+  summarise(N.ANA=n()) %>% 
+  ungroup()
+
+ANAL.F.S %>% 
+  group_by(ANALYSIS.BIG,Section) %>% 
+  summarise(Sum.A.S=sum(N.ANA)) %>% 
+  ungroup() %>% 
+  group_by(Section) %>% 
+  mutate(R.A.S=round(Sum.A.S/sum(Sum.A.S),digits=3)) %>% 
+  select(-3) %>% 
+  spread(key=Section,value=R.A.S) %>% 
+  mutate_all(zerotoNA) %>% kable()
+```
+
+## Quantitative Research by Type
+
+Among Types, 'Support(12.5%)','Treatment(25%)' use SCENARIO analysis more often than othe Sectors. These Sectors can be improved by using Machine Learing.
+
+```{r QR.Type}
+ANAL.F.T=QResearch %>% 
+  #  filter(ANALYSIS.BIG!="CVM") %>% 
+  group_by(Type,ANALYSIS.BIG) %>% 
+  summarise(N.ANA=n()) %>% 
+  ungroup()
+
+ANAL.F.T %>% 
+  group_by(ANALYSIS.BIG,Type) %>% 
+  summarise(Sum.A.T=sum(N.ANA)) %>% 
+  ungroup() %>% 
+  group_by(Type) %>% 
+  mutate(R.A.T=round(Sum.A.T/sum(Sum.A.T),digits=3)) %>% 
+  select(-3) %>% 
+  spread(key=Type,value=R.A.T) %>% 
+  mutate_all(zerotoNA) %>% kable()
+```

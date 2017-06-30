@@ -1,0 +1,108 @@
+Section,Type,Index1,Name,Method,Category,index2,Name2
+Water,Control,1,대도시지역의극한홍수로인한복합영향메커니즘분석(채여라),TextMining,Project,,사업보고서
+Water,Control,2,대도시지역의극한홍수로인한복합영향메커니즘분석(채여라),SystemAnal,Project,,사업보고서
+Water,Treatment,3,샛강관리및이용활성화방안연구강형식,Survey,Project,32,샛강 관리 및 이용 활성화 방안 연구
+Water,Treatment,4,물환경서비스와물인프라의지속가능성평가강형식,Case,Project,26,물환경 서비스와 물 인프라의 지속가능성 평가 사업
+Water,Treatment,5,물환경서비스와물인프라의지속가능성평가강형식,Survey,Project,26,물환경 서비스와 물 인프라의 지속가능성 평가 사업
+Water,Treatment,6,물환경서비스와물인프라의지속가능성평가강형식,Econometrics,Project,26,물환경 서비스와 물 인프라의 지속가능성 평가 사업
+Water,Treatment,7,물환경서비스와물인프라의지속가능성평가강형식,Index,Project,26,물환경 서비스와 물 인프라의 지속가능성 평가 사업
+Water,Treatment,8,사회적투자수익률을고려한물환경인프라시설투자방향연구(류재나.강형식),Scenario,Basic,31,사회적 투자수익률(SROI)을 고려한 물환경 인프라 시설 투자 방향 연구
+Water,Treatment,9,사회적투자수익률을고려한물환경인프라시설투자방향연구(류재나.강형식),Econometrics,Basic,31,사회적 투자수익률(SROI)을 고려한 물환경 인프라 시설 투자 방향 연구
+Water,Treatment,10,가뭄단계에따른적응형가뭄관리정책연구:지역차원의비구조적가뭄대책을중심으로(김호정),Lit,Policy,,정책보고서
+Water,Treatment,11,사물인터넷을활용한스마트물환경관리방안및정책기반마련연구(한혜진),Lit,Basic,13,사물인터넷(IoT)을 활용한 스마트 물환경관리 방안 및 정책기반 마련 연구
+Water,Preparation,12,물이용지속성의평가와미래전망(김익제),Index,Climate,2,기후환경정책연구
+Water,Preparation,13,물이용지속성의평가와미래전망(김익제),Econometrics,Climate,2,기후환경정책연구
+Water,Preparation,14,기후변화 및 사회경제적 요인의 동태적 변화를 고려한 미래 물수급 관리정책 마련 1 (류재나.김호정.김민아),SystemAnal,Climate,2,기후환경정책연구
+Waste,Treatment,15,공간정보를활용한재해폐기물성상별최적관리방안(조지혜),Scenario,Basic,40,공간정보를 활용한 재해폐기물 성상별 최적 관리방안
+Waste,Treatment,16,폐자원흐름분석을통한전기전자제품의upcycling활성화방안(이희선),SampleStats,Basic,34,폐자원흐름분석을 통한 전기·전자제품의 upcycling 활성화 방안
+Waste,Treatment,17,나노폐기물의안전처리를위한관리전략수립연구(조지혜),Scenario,Policy,,정책보고서
+Waste,Support,18,자원순환사회전환촉진을위한재활용산업활성화방안-재활용관리제도전환에따른영향분석(이소라),Econometrics,Basic,,기초연구
+Waste,Support,19,자원순환사회전환촉진을위한재활용산업활성화방안-재활용관리제도전환에따른영향분석(이소라),Modeling,Basic,,기초연구
+AirClimate,Control,20,빅데이터를이용한대기오염의건강영향평가및피해비용추정2(안소은),Econometrics,Project,29,빅데이터를 이용한 대기오염의 건강영향 평가 및 피해비용 추정
+AirClimate,Control,21,빅데이터를이용한대기오염의건강영향평가및피해비용추정2(안소은),Survey,Project,29,빅데이터를 이용한 대기오염의 건강영향 평가 및 피해비용 추정
+AirClimate,Control,22,온실가스감축정책평가를위한환경경제모형개발운용3(강성원박창석),Modeling,Project,20,온실가스 감축정책 평가를 위한 환경경제모형 개발·운용
+AirClimate,Control,23,교통환경정책수립을위한대기환경개선효과추정방안연구:도로이동오염원을중심으로(한진석),Modeling,Basic,25,교통환경정책 수립을 위한 대기환경개선효과 추정방안 연구(도로이동오염원을 중심으로)
+AirClimate,Control,24,대기환경비용을고려한친환경차구매보조금실효성제고연구:차종별적정보조금수준분석을중심으로(한진석),Modeling,Policy,,정책보고서
+AirClimate,Control,25,대기환경비용을고려한친환경차구매보조금실효성제고연구:차종별적정보조금수준분석을중심으로(한진석),Scenario,Policy,,정책보고서
+AirClimate,Control,26,실도로에서경유차의대기오염물질초과배출에따른사회적비용연구(강광규),Case,Policy,,정책보고서
+AirClimate,Control,27,제주탄소제로섬추진전략연구(이병국),Case,Policy,,정책보고서
+AirClimate,Control,28,자율주행자동차의친환경성제고를위한기초연구(이승민),Lit,WP,,기초연구
+AirClimate,Control,29,기후대기환경정책에활용하기위한건강위해성평가개선연구:농도반응함수의국내표준안을중심으로(하종식),Econometrics,Basic,28,기후·대기 환경정책에 활용하기 위한 건강 위해성 평가 표준안 연구
+AirClimate,Control,30,기후변화에따른건강영향평가적응기술및정책지원시스템개발(신용승),Modeling,Project,18,기후변화에 따른 건강영향평가.적응 기술 및 정책지원 시스템 개발
+AirClimate,Treatment,31,온실가스감축-기후변화적응연계전략수립(황인창),Lit,Climate,2,기후환경정책연구
+AirClimate,Treatment,32,도시의기후회복력확보를위한공간단위별평가체계및모형개발2(김동현),Index,Basic,7,도시의 기후 회복력 확보를 위한 공간단위 별 평가체계 및 모형 개발(Ⅱ)
+AirClimate,Treatment,33,도시의기후회복력확보를위한공간단위별평가체계및모형개발2(김동현),Econometrics,Basic,7,도시의 기후 회복력 확보를 위한 공간단위 별 평가체계 및 모형 개발(Ⅱ)
+AirClimate,Treatment,34,기후변화적응정책지원을위한토지이용통합모델개발2(김오석),Modeling,Basic,49,기후변화 적응정책 지원을 위한 토지이용통합모델 개발(Ⅱ)
+AirClimate,Treatment,35,기후변화적응정책지원을위한토지이용통합모델개발2(김오석),Econometrics,Basic,49,기후변화 적응정책 지원을 위한 토지이용통합모델 개발(Ⅱ)
+AirClimate,Treatment,36,기후변화대응역량강화를위한시스템다이내믹스모델개발(채여라),Modeling,Project,,사업보고서
+AirClimate,Treatment,37,기후환경대응역량평가체계구축(채여라),Survey,Project,,사업보고서
+AirClimate,Treatment,38,기후환경대응역량평가체계구축(채여라),SampleStats,Project,,사업보고서
+AirClimate,Preparation,39,환경평가지원을위한지역환경현황분석시스템구축및운영:개발계획으로인한국내대기질변화전망및개발계획의적정성평가를위한대기환경분석(문난경),SampleStats,Project,38,환경평가 지원을 위한 지역 환경현황 분석 시스템 구축 및 운영 
+AirClimate,Support,40,환경과문화예술콘텐츠웅합을통한기후환경리스크커뮤니케이션전략수립(신용승),TextMining,Climate,2,기후환경정책연구
+EGLOBE,Support,41,신기후체제시대기후변화대응정책추진체계연구(김이진.이상엽),Lit,Policy,,정책보고서
+AirClimate,Support,42,저탄소기후변화적응사회를위한사회경제변화시나리오개발(채여라),Scenario,Project,24,저탄소 기후변화 적응 사회를 위한 사회·경제 변화 시나리오 개발
+AirClimate,Support,43,공공자료분석을통한친환경적풍력에너지개발기초연구(김태윤),Case,WP,,기초연구
+Nature,Control,44,기후변화에따른국가리스크정량화연구3:연안시스템을중심으로(조광우),Modeling,Project,,사업보고서
+Echemi,Control,45,화학물질관리법내화학사고정책의개선방안및산업계지원방안연구1(박정규),Lit,Basic,22,화학물질관리법 내 화학사고 정책의 개선방안 및 산업계 지원방안 연구(Ⅰ)
+Echemi,Support,46,EUREACH시험자료분석을통한화평법지원방안연구(박정규),Lit,Policy,,정책보고서
+Echemi,Control,47,화학사고의경제적손실추정을위한방법론진단및선정방안연구:인적생태적피해액추정을중심으로(서양원.곽소윤),Econometrics,Policy,,정책보고서
+Nature,Control,48,토지환경분야의지속가능발전목표(SDGs)이행을위한정책방향(명수정),Index,WP,,기초연구
+Nature,Control,49,생물다양성협약이행지원프로그램기획운영2(이현우),Lit,Project,35,생물다양성협약 이행 지원 프로그램 기획·운영
+Nature,Control,50,유네스코세계지질공원운영강화에따른국가지질공원제도의개선방안연구(이수재),Lit,Policy,,정책보고서
+Nature,Control,51,제3차국가생물다양성전략이행상황점검(이현우),SpecialCouncil,Project,,사업보고서
+Nature,Control,52,제3차국가생물다양성전략이행상황점검(이현우),SampleStats,Project,,사업보고서
+Nature,Treatment,53,농촌지역환경복지증진을위한가축매몰지피해관리방안연구(황상일),Survey,Project,50,농촌지역 환경복지 증진을 위한 가축매몰지 피해 관리방안 연구
+Nature,Treatment,54,원전사고대응재생계획수립방안연구1:후쿠시마원전사고의중장기모니터링에기반하여(조공장),Lit,Project,44,원전사고 대응 재생계획 수립방안 연구 - 후쿠시마 원전사고의 중장기 모니터링에 기반하여
+Nature,Treatment,55,드론을이용한환경재난사후대응기술및연구동향분석연구,Lit,WP,,기초연구
+Nature,Treatment,56,신기후체제의기후변화적응및손실과피해에관한대응방안(이승준),Lit,Policy,,정책보고서
+Nature,Treatment,57,토양정화곤란부지의최적관리방안연구(박용하),Lit,Policy,,정책보고서
+Nature,Treatment,58,국내능선축GIS기반통합관리시스템개발(이수재),DB,Project,15,국내 능선축 GIS기반 통합관리 시스템 개발
+IMEVAL,Preparation,59,토양자원관리를위한전략환경영향평가개선기초연구:도시개발사업을중심으로(양경),Lit,WP,,기초연구
+IMEVAL,Preparation,60,지하수개발사업의환경영향평가개선을위한기초연구(김경호),Lit,WP,,기초연구
+Nature,Preparation,61,지중환경관리를위한제도개선방안연구2(황상일),Lit,Basic,19,지중환경관리를 위한 제도 개선방안 연구(Ⅱ)
+IMEVAL,Preparation,62,비도시지역주거-공장혼재형난개발평가기준개발및활용방안마련(이영재),Index,Policy,,정책보고서
+IMEVAL,Preparation,63,환경영향평가와지하안전영향평가의연계방안연구(현윤정),Lit,Policy,,정책보고서
+Nature,Preparation,64,랜덤워크를이용한생태네트워크변화모의예측방안연구(김지영),Modeling,Basic,4,랜덤워크를 이용한 생태네트워크 변화 모의예측방안 연구(Ⅱ)
+IMEVAL,Preparation,65,국가및지역미래성장동력에대한환경성분석및환경영향평가대비방안연구(방상원),Lit,Basic,43,국가 및 지역 미래성장동력에 대한 환경성 분석 및 환경영향평가 대비 방안 연구
+IMEVAL,Preparation,66,환경평가지원을위한지역환경현황분석시스템구축및운영:개발계획에따른생태및연안환경변화분석(김오석),SampleStats,Project,38,환경평가 지원을 위한 지역 환경현황 분석 시스템 구축 및 운영 
+IMEVAL,Preparation,67,환경평가지원을위한지역환경현황분석시스템구축및운영:개발계획에따른인구변화패턴분석(이상윤),SampleStats,Project,38,환경평가 지원을 위한 지역 환경현황 분석 시스템 구축 및 운영 
+Nature,Preparation,68,생태계서비스기반의자연자본지속가능성지수개발연구(이현우),Lit,Basic,16,생태계서비스 기반의 자연자본 지속가능성 지수 개발 연구(Ⅰ)
+Nature,Support,69,시민과학의자연환경조사적용방안조사(김윤정),Lit,WP,,기초연구
+Nature,Support,70,근지표환경임계영역(CriticalZones)의환경적중요성과환경관리의미래이슈,Lit,WP,,기초연구
+IMEVAL,Support,71,환경영향평가에서활용가능한주민참여방법기초연구(이상윤),Lit,WP,,기초연구
+EIND,Support,72,자연혜택평가를통한지역경제활성화방안1(김충기),Modeling,Project,33,자연재해 발생 항목의 시공간 상관관계 분석 및 융합을 통한 시계열 피해도  작성기술 개발 : 극단적 기후변화에 따른 도시 재해를 중심으로
+EGLOBE,Support,73,통일대비북한지역자연재해대응을위한자료구축과남북협력방안연구(강택구),Lit,Project,68,통일대비 북한의 환경문제 진단 및 환경개선을 위한 남북협력 방안마련 연구
+ETC,Control,74,개발사업의소음모니터링분석과개선방안(선효성),Lit,Project,,사업보고서
+ETC,Control,75,건물부문의환경부하평가모형개발을위한기초연구(송지윤),Lit,WP,,기초연구
+ETC,Preparation,76,미래환경이슈대응을위한환경정책과제개발과환경거버넌스발전연구(추장민),Record,Policy,,정책보고서
+ETC,Preparation,77,미래환경전망및지속가능사회비전설정기반구축(조공장),SampleStats,Climate,2,기후환경정책연구
+ETC,Preparation,78,시스템과네트워크이론을활용한미래환경정책방향연구(이승준),Lit,WP,,기초연구
+ETC,Preparation,79,국가지속가능성평가등에관한연구(김종호),SampleStats,Project,78,국가 지속가능성 평가 등에 관한 연구
+ETC,Preparation,80,미래고온환경변화와직종간임금격차추정(김동현),Econometrics,WP,,기초연구
+EIND,Support,81,환경경제통합분석을위한환경가치종합연구(이창훈),DB,Project,41,환경·경제 통합분석을 위한 환경가치 종합연구
+ETC,Support,82,해외환경정책인벤토리구축연구(조일현외),Lit,WP,,기초연구
+ETC,Support,83,기후변화정책포럼2016(이상엽),Record,Project,,정책자료집
+ETC,Support,84,친환경적태도-행동분석모형구축을통한친환경소비활성화방안연구(곽소윤),Index,Project,,사업보고서
+ETC,Support,85,친환경적태도-행동분석모형구축을통한친환경소비활성화방안연구(곽소윤),Modeling,Project,,사업보고서
+ETC,Support,86,친환경적태도-행동분석모형구축을통한친환경소비활성화방안연구(곽소윤),Econometrics,Project,,사업보고서
+ETC,Support,87,해외환경정책인벤토리구축연구:환경평가부문(박하늘),Lit,WP,,기초연구
+ETC,Support,88,ICT발전트렌드에대응하는공간정보의환경이슈적용체계구축(이명진.이정호),TextMining,Basic,55,ICT 발전트렌드에 대응하는 공간정보의 환경이슈 적용 체계 구축
+ETC,Support,89,해외환경정책인벤토리구축연구:환경보건및온실가스감축부문,Lit,WP,,기초연구
+ETC,Support,90,정부3.0기반지역기피시설주민수용성평가방안2(김태현),Econometrics,Basic,52,정부3.0 기반 지역기피시설 주민수용성 평가 방안(Ⅱ)
+EHEALTH,Support,91,지역기반환경보건정책지원방안연구2(신용승.배현주),Lit,Basic,1,지역기반 환경보건정책 지원 방안 연구(Ⅱ) - CARE 프로그램을 중심으로 - 
+EHEALTH,Support,92,지역기반환경보건정책지원방안연구2(신용승.배현주),Case,Basic,1,지역기반 환경보건정책 지원 방안 연구(Ⅱ) - CARE 프로그램을 중심으로 - 
+EIND,Support,93,녹색경제평가를위한지표체계개발(김종호),Index,Project,,사업보고서
+EIND,Support,94,한중일3국의환경투자가산업에미치는영향비교분석및환경산업활성화방안연구(이정석),Modeling,Project,,사업보고서
+EIND,Support,95,"미세조류바이오매스의자원화활용에대한연구:바이오(기능성)소재를중심으로(지민규)""",Lit,WP,,기초연구
+EGLOBE,Support,96,신기후체제협상대응및기후서비스산업발전방안연구(강상인),Lit,Climate,2,기후환경정책연구
+EGLOBE,Support,97,신기후체제협상대응및기후서비스산업발전방안연구(강상인),Case,Climate,2,기후환경정책연구
+EGLOBE,Support,98,아태지역녹색경제이행과메통유역농업부문융합혁신전략연구(강상인),Lit,Project,,사업보고서
+EGLOBE,Support,99,최빈국지역정부의기후변화적응계획수립을위한기술적가이드라인개발연구(장훈.송영일),Lit,Climate,2,기후환경정책연구
+EGLOBE,Support,100,최빈국지역정부의기후변화적응계획수립을위한기술적가이드라인개발연구(장훈.송영일),Case,Climate,2,기후환경정책연구
+EGLOBE,Support,101,중국의일대일로대응유라시아지역환경전략연구(추장민),Lit,Basic,10,중국의 ‘일대일로(一帶一路)’ 대응 유라시아 지역 환경전략 연구
+EGLOBE,Support,102,환경분야공적개발원조(ODA)사업평가지침마련을위한연구(조공장),Lit,Policy,,정책보고서
+EGLOBE,Support,103,Post2020신기후체제협상적응의제대응방안연구(이승준),Lit,Project,30,Post-2020 신기후체제 협상 적응의제 대응방안 연구
+EGLOBE,Support,104,북한환경정보구축및활용방안연구2:원격탐사를이용한자완현경성우수지역평가,Econometrics,Basic,58,북한 환경정보구축 및 활용 방안 연구(Ⅱ) - 접근불능지역의 보전지역 설정을 위한 환경공간정보 통합 분석 방안 연구
+EGLOBE,Support,105,북한환경정보구축및활용방안연구2:원격탐사를이용한자완현경성우수지역평가,DB,Basic,58,북한 환경정보구축 및 활용 방안 연구(Ⅱ) - 접근불능지역의 보전지역 설정을 위한 환경공간정보 통합 분석 방안 연구
+ETC,Support,106,2016국민환경의식조사연구,Survey,WP,,기초연구
+EHEALTH,Support,107,건강영향평가분야에서의위해소통을위한리스크테이블제작연구,SampleStats,WP,,기초연구
