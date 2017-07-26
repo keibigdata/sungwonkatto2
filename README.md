@@ -22,11 +22,10 @@
 2017.07.26 추가 등재 파일
 
 - 학술논문 자료 DB
-
     1. ENVpapers_0725.csv
     
+    
 - 학술논문  자료 분석 결과
-     
-     1. ENVpapers_summary.html (실행결과)
-     
-     2. ENVpapers_summary.Rmd (분석코드)
+    1. ENVpapers_summary.html (실행결과)
+    
+    2. ENVpapers_summary.Rmd (분석코드)
