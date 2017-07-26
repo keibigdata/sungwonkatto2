@@ -1,0 +1,208 @@
+---
+title: "EnvPolicyPapers2013to17"
+author: "Kang Sung Won"
+date: "2017 7 25"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Intro
+
+In this memo, we look into what methods are used in Env Policy papers. For Env policy papers, we used google search results with key world "환경정책". Papers written in Korean and publised within 2013-17 is gathered. And then we excluded papers presented in conference only. The result is saved in **ENVpapers_0725.csv**
+
+
+
+First, we check the share of Quantitative analysis. 
+
+```{r lib}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+library(knitr)
+
+zerotoNA=function(x){
+  x[is.na(x)]=0
+  return(x)}   
+EnvPapers <- read_csv("ENVpapers_0725.csv")
+EnvPapers = EnvPapers[,(1:11)]
+colnames(EnvPapers)[6]="Section"
+```
+
+# Method Frequency.
+
+## Overall
+
+Overall, 
+
+```{r MethodFreq}
+
+STFreq=EnvPapers %>% group_by(Section,Type) %>% summarise(F.S.T=n()) %>%  spread(key=Type,value=F.S.T)%>% mutate_all(zerotoNA)
+
+kable(STFreq)
+
+MethodFrequency=EnvPapers %>% group_by(Section,Type,Method) %>% summarise(FM=n()) 
+
+
+
+
+# Method Frequency Overall
+MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Method) %>% 
+  summarise(Sum.M=sum(FM)) %>% 
+  arrange(desc(Sum.M)) %>% 
+  mutate(Sum.All=sum(Sum.M)) %>% 
+  mutate(R.M=round(Sum.M/Sum.All,digits=3)) %>% 
+  select(-3) %>% kable() 
+```
+
+
+## By Section and Type
+
+Among sectors, 
+
+
+
+```{r MFreqSec}
+# Method Frequncey by Section
+MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Section,Method) %>% 
+  summarize(Sum.M.S.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Section) %>% 
+  mutate(Sum.S=sum(Sum.M.S.T)) %>% 
+  mutate(R.M.S=round(Sum.M.S.T/Sum.S,digits=3)) %>% 
+  filter(Sum.S>5) %>%
+  select(c(1,2,5)) %>% 
+  spread(key=Section,value=R.M.S) %>% mutate_all(zerotoNA) %>%
+  kable()
+
+MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Section,Method) %>% 
+  summarize(Sum.M.S.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Section) %>% 
+  mutate(Sum.S=sum(Sum.M.S.T)) %>% 
+  mutate(R.M.S=round(Sum.M.S.T/Sum.S,digits=3)) %>% 
+  filter(Sum.S>5) %>% filter(Method=="STATANAL"|Method=="Modeling"|Method=="Scenario"|Method=="Measure") %>%
+  spread(key=Method,value=R.M.S) %>% mutate_all(zerotoNA) %>% mutate(Qm=STATANAL+Modeling+Scenario+Measure) %>% group_by(Section) %>% summarise(Qm.S=sum(Qm)) %>% arrange(desc(Qm.S))
+
+#Q share by section
+Qshare.S=MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Section,Method) %>% 
+  summarize(Sum.M.S.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Section) %>% 
+  mutate(Sum.S=sum(Sum.M.S.T)) %>% 
+  mutate(R.M.S=round(Sum.M.S.T/Sum.S,digits=3)) %>% filter(Sum.S>5)%>%
+  select(c(1,2,5)) %>%
+  spread(key=Method,value=R.M.S) %>% 
+  mutate(Quan=sum(zerotoNA(STATANAL),zerotoNA(Modeling),zerotoNA(Scenario),zerotoNA(Measure))) %>%
+  select(c(1,5,6,8,9,12)) %>% 
+  mutate_all(zerotoNA) 
+
+kable(Qshare.S)
+
+# Econ and Model share : take out Sections less than 5 obs
+MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Section,Method) %>% 
+  summarize(Sum.M.S.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Section) %>% 
+  summarise(Sum.S=sum(Sum.M.S.T)) %>% left_join(Qshare.S,by="Section") %>% filter(Sum.S>5) %>% arrange(desc(Quan)) %>% mutate_all(zerotoNA) %>% kable()
+
+#Quant share by section and type
+
+Q.Total=MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Type,Section) %>% 
+  mutate(Sum.M.S.T=sum(FM)) %>%
+  spread(key=Method,value=FM) %>%
+  mutate_all(zerotoNA) %>%
+  mutate(Sum.Q=STATANAL+Modeling+Measure+Scenario) %>%
+  select(1,2,3,14)%>%
+  mutate(R.Q=round(Sum.Q/Sum.M.S.T,digits=3)) %>%
+  filter(Sum.Q>0)%>%
+  select(1,2,4)
+
+Q.Total %>% spread(key=Type,value=Sum.Q)%>% mutate_all(zerotoNA)
+
+R.Q=MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Type,Section) %>% 
+  mutate(Sum.M.S.T=sum(FM)) %>%
+  spread(key=Method,value=FM) %>%
+  mutate_all(zerotoNA) %>%
+  mutate(Sum.Q=STATANAL+Modeling+Measure+Scenario) %>%
+  select(1,2,3,14)%>%
+  mutate(R.Q=round(Sum.Q/Sum.M.S.T,digits=3)) %>% filter(Sum.M.S.T>5 & R.Q>0) %>%
+  select(1,2,5)
+R.Q %>% spread(key=Type,value=R.Q)%>% mutate_all(zerotoNA)
+  
+Q.F=ggplot(Q.Total,aes(Type,Section))+geom_tile(aes(fill=Sum.Q),color="white")+scale_fill_gradient(low="white",high="steelblue")
+Q.F
+ggsave(Q.F,file="Q.F.Paper.png")
+Q.R=ggplot(R.Q, aes(Type,Section))+geom_tile(aes(fill=R.Q),color="white")+scale_fill_gradient(low="white",high="steelblue")
+Q.R
+ggsave(Q.R,file="Q.R.Paper.png")
+```
+
+Among Types, "Preparation" has unusally high share of Litearuate. Maybe it is because all IMEVAL is in Preaparation. All four types uses STATANAL quite often, and Control/Preparation has 10% or so modeling share.  
+
+```{r MFreqType}
+# Method Frequncey by Type
+MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Type,Method) %>% 
+  summarize(Sum.M.T.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Type) %>% 
+  mutate(Sum.T=sum(Sum.M.T.T)) %>% 
+  mutate(R.M.T=round(Sum.M.T.T/Sum.T,digits=3)) %>% 
+  select(c(1,2,5)) %>% 
+  spread(key=Type,value=R.M.T) %>% mutate_all(zerotoNA) %>%
+  kable()
+
+
+
+
+Qshare.T=MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Type,Method) %>% 
+  summarize(Sum.M.S.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Type) %>% 
+  mutate(Sum.S=sum(Sum.M.S.T)) %>% 
+  mutate(R.M.S=round(Sum.M.S.T/Sum.S,digits=3)) %>% 
+  select(c(1,2,5)) %>%
+  spread(key=Method,value=R.M.S) %>% 
+  mutate(Quan=sum(zerotoNA(STATANAL),zerotoNA(Measure),zerotoNA(Scenario),zerotoNA(Modeling))) %>%
+  select(c(1,5,6,8,9,12)) %>% 
+  mutate_all(zerotoNA) 
+
+
+MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Type,Method) %>% 
+  summarize(Sum.M.T.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Type) %>% 
+  summarise(Sum.T=sum(Sum.M.T.T)) %>% left_join(Qshare.T,by="Type") %>% filter(Sum.T>5) %>% arrange(desc(Quan)) %>% mutate_all(zerotoNA) %>% kable()
+
+```
+
+
+
+
