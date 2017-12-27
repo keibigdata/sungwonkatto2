@@ -130,6 +130,7 @@ $(document).ready(function () {
 <p>Since Machine Learning uses data to get answers, it is directly related to Quantitative analysis. To find out which Sector/Type of Environmental Research can make use of Machine Learning, we should check which part uses Quantitative Reasearch first.</p>
 <pre class="r"><code>library(readr)
 library(dplyr)</code></pre>
+<pre><code>## Warning: package 'dplyr' was built under R version 3.4.1</code></pre>
 <pre><code>## 
 ## Attaching package: 'dplyr'</code></pre>
 <pre><code>## The following objects are masked from 'package:stats':
@@ -592,10 +593,8 @@ Q.Total=MethodFrequency %&gt;%
   select(1,2,4)
 
 Q.Total %&gt;% spread(key=Type,value=Sum.Q)%&gt;% mutate_all(zerotoNA)</code></pre>
-<pre><code>## Source: local data frame [8 x 5]
-## Groups: Section [8]
-## 
-## # A tibble: 8 x 5
+<pre><code>## # A tibble: 8 x 5
+## # Groups:   Section [8]
 ##      Section Control Preparation Support Treatment
 ##        &lt;chr&gt;   &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
 ## 1 AirClimate       7           0       1         4
@@ -617,10 +616,8 @@ Q.Total %&gt;% spread(key=Type,value=Sum.Q)%&gt;% mutate_all(zerotoNA)</code></p
   mutate(R.Q=round(Sum.Q/Sum.M.S.T,digits=3)) %&gt;% filter(Sum.M.S.T&gt;5 &amp; R.Q&gt;0) %&gt;%
   select(1,2,5)
 R.Q %&gt;% spread(key=Type,value=R.Q)%&gt;% mutate_all(zerotoNA)</code></pre>
-<pre><code>## Source: local data frame [5 x 4]
-## Groups: Section [5]
-## 
-## # A tibble: 5 x 4
+<pre><code>## # A tibble: 5 x 4
+## # Groups:   Section [5]
 ##      Section Control Support Treatment
 ##        &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
 ## 1 AirClimate   0.636   0.000     0.500

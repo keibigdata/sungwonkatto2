@@ -3,8 +3,9 @@ title: "KEIResearch2016"
 author: "Kang Sung Won"
 date: '2017 6 23 '
 output:
-  html_document: default
+  word_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}

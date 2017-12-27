@@ -1,0 +1,310 @@
+---
+title: "EnvPolicyPapers2013to17:Qmethod0822"
+author: "Kang Sung Won"
+date: "2017 8 22"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Intro
+
+In this memo, we combine 2016 KEI Report and Environmental Policy papar. For Env policy papers, we used google search results with key world "환경정책". Papers written in Korean and publised within 2013-17 is gathered. And then we excluded papers presented in conference only.
+
+
+
+First, we check the share of Quantitative analysis. 
+
+```{r lib}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+library(knitr)
+
+zerotoNA=function(x){
+  x[is.na(x)]=0
+  return(x)}   
+EnvPapers <- read_csv("ENVpapers_0725.csv")
+EnvPapers = EnvPapers[,(1:11)]
+colnames(EnvPapers)[6]="Section"
+
+EnvResearch <- read_csv("EnvResearch_0619.csv")
+EnvResearch$Method[EnvResearch$Method=="Econometrics"]="STATANAL"
+
+
+EnvResearch$Title=EnvResearch$Name
+EnvResearch.F=EnvResearch %>% select(Title,Section,Type,Method)
+EnvPapers.F=EnvPapers %>% select(Title,Section,Type,Method)
+ER.combine.F=rbind(EnvResearch.F,EnvPapers.F)
+
+```
+
+# Method Frequency.
+
+## Overall
+
+Overall, Lit survey is most frequently used(32.8%). It is more frequently used thatn Statistical Analysis(17.7%) and Modeling (10.1%) combined. 
+
+```{r MethodFreq}
+
+STFreq=ER.combine.F %>% group_by(Section,Type) %>% summarise(F.S.T=n()) %>%  spread(key=Type,value=F.S.T)%>% mutate_all(zerotoNA)
+
+kable(STFreq)
+
+MethodFrequency=ER.combine.F %>% group_by(Section,Type,Method) %>% summarise(FM=n()) 
+
+
+
+
+# Method Frequency Overall
+MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Method) %>% 
+  summarise(Sum.M=sum(FM)) %>% 
+  arrange(desc(Sum.M)) %>% 
+  mutate(Sum.All=sum(Sum.M)) %>% 
+  mutate(R.M=round(Sum.M/Sum.All,digits=3)) %>% 
+  select(-3) %>% kable() 
+```
+
+
+## By Section and Type
+
+Among sectors, 
+1. Water(28.6%),ETC(26.3%) has relatively high share of STATANAL
+2. EIND(28.6%),AirClimate(20%) has relatively high share of Modeling.
+3. Waste(25%) has highest share of Scenario
+
+Define quantitative analysis = Modeling + Measure + STATANAL + Scenario + Systemanal.
+
+Excluding section with sample size less than 5,
+
+Waste , Airclimate, EIND, Water has higher than 40% share of quantitative analysis.  
+
+Among types, 
+
+
+
+```{r MFreqSec}
+# Method Frequncey by Section
+MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Section,Method) %>% 
+  summarize(Sum.M.S.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Section) %>% 
+  mutate(Sum.S=sum(Sum.M.S.T)) %>% 
+  mutate(R.M.S=round(Sum.M.S.T/Sum.S,digits=3)) %>% 
+  filter(Sum.S>5) %>%
+  select(c(1,2,5)) %>% 
+  spread(key=Section,value=R.M.S) %>% mutate_all(zerotoNA) %>%
+  kable()
+
+MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Section,Method) %>% 
+  summarize(Sum.M.S.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Section) %>% 
+  mutate(Sum.S=sum(Sum.M.S.T)) %>% 
+  mutate(R.M.S=round(Sum.M.S.T/Sum.S,digits=3)) %>% 
+  filter(Sum.S>5) %>% filter(Method=="STATANAL"|Method=="Modeling"|Method=="Scenario"|Method=="Measure"|Method=="SystemAnal") %>%
+  spread(key=Method,value=R.M.S) %>% mutate_all(zerotoNA) %>% mutate(Qm=STATANAL+Modeling+Scenario+Measure+SystemAnal) %>% group_by(Section) %>% summarise(Qm.S=sum(Qm)) %>% arrange(desc(Qm.S))
+
+#Q share by section
+Qshare.S=MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Section,Method) %>% 
+  summarize(Sum.M.S.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Section) %>% 
+  mutate(Sum.S=sum(Sum.M.S.T)) %>% 
+  mutate(R.M.S=round(Sum.M.S.T/Sum.S,digits=3)) %>% filter(Sum.S>5)%>%
+  select(c(1,2,5)) %>%
+  spread(key=Method,value=R.M.S) %>% 
+  mutate(Quan=sum(zerotoNA(STATANAL),zerotoNA(Modeling),zerotoNA(Scenario),zerotoNA(Measure),zerotoNA(SystemAnal))) %>%
+  select(c(1,6,7,10,12,14,16)) %>% 
+  mutate_all(zerotoNA) 
+
+kable(Qshare.S)
+
+# STAT and Model share : take out Sections less than 5 obs
+MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Section,Method) %>% 
+  summarize(Sum.M.S.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Section) %>% 
+  summarise(Sum.S=sum(Sum.M.S.T)) %>% left_join(Qshare.S,by="Section") %>% filter(Sum.S>5) %>% arrange(desc(Quan)) %>% mutate_all(zerotoNA) %>% kable()
+
+#Quant share by section and type
+
+Q.Total=MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Type,Section) %>% 
+  mutate(Sum.M.S.T=sum(FM)) %>%
+  spread(key=Method,value=FM) %>%
+  mutate_all(zerotoNA) %>%
+  mutate(Sum.Q=STATANAL+Modeling+Measure+Scenario+SystemAnal) %>%
+  select(1,2,3,18)%>%
+  mutate(R.Q=round(Sum.Q/Sum.M.S.T,digits=3)) %>%
+  filter(Sum.Q>0)%>%
+  select(1,2,4)
+
+#Q.Total %>% spread(key=Type,value=Sum.Q)%>% mutate_all(zerotoNA)
+
+R.Q=MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Type,Section) %>% 
+  mutate(Sum.M.S.T=sum(FM)) %>%
+  spread(key=Method,value=FM) %>%
+  mutate_all(zerotoNA) %>%
+  mutate(Sum.Q=STATANAL+Modeling+Measure+Scenario+SystemAnal) %>%
+  select(1,2,3,18)%>%
+  mutate(R.Q=round(Sum.Q/Sum.M.S.T,digits=3)) %>% filter(Sum.M.S.T>5 & R.Q>0) %>%
+  select(1,2,5)
+R.Q %>% spread(key=Type,value=R.Q)%>% mutate_all(zerotoNA)
+  
+Q.F=ggplot(Q.Total,aes(Type,Section))+geom_tile(aes(fill=Sum.Q),color="white")+scale_fill_gradient(low="white",high="steelblue")
+Q.F
+ggsave(Q.F,file="Q.F.Combine.png")
+Q.R=ggplot(R.Q, aes(Type,Section))+geom_tile(aes(fill=R.Q),color="white")+scale_fill_gradient(low="white",high="steelblue")
+Q.R
+ggsave(Q.R,file="Q.R.Combine.png")
+```
+
+Among Types, "Preparation" has unusally high share of Litearuate(46.2%). Maybe it is because all IMEVAL is in Preaparation. Control (44.7%), Treatment (38.7%) has larger share of quantatative research. For these two types of policies, policy evaluation is usually done by checking causaulity using regression. That explains why we have high share in qualitiative study here. The same is true with support, to somewhat lesser extend.
+
+```{r MFreqType}
+# Method Frequncey by Type
+MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Type,Method) %>% 
+  summarize(Sum.M.T.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Type) %>% 
+  mutate(Sum.T=sum(Sum.M.T.T)) %>% 
+  mutate(R.M.T=round(Sum.M.T.T/Sum.T,digits=3)) %>% 
+  select(c(1,2,5)) %>% 
+  spread(key=Type,value=R.M.T) %>% mutate_all(zerotoNA) %>%
+  kable()
+
+
+
+
+Qshare.T=MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Type,Method) %>% 
+  summarize(Sum.M.S.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Type) %>% 
+  mutate(Sum.S=sum(Sum.M.S.T)) %>% 
+  mutate(R.M.S=round(Sum.M.S.T/Sum.S,digits=3)) %>% 
+  select(c(1,2,5)) %>%
+  spread(key=Method,value=R.M.S) %>% 
+  mutate(Quan=sum(zerotoNA(STATANAL),zerotoNA(Measure),zerotoNA(Scenario),zerotoNA(Modeling),zerotoNA(SystemAnal))) %>%
+  select(c(1,6,7,10,12,14,16)) %>% 
+  mutate_all(zerotoNA) 
+
+
+MethodFrequency %>% 
+  ungroup() %>% 
+  group_by(Type,Method) %>% 
+  summarize(Sum.M.T.T=sum(FM)) %>% 
+  ungroup() %>% 
+  group_by(Type) %>% 
+  summarise(Sum.T=sum(Sum.M.T.T)) %>% left_join(Qshare.T,by="Type") %>% filter(Sum.T>5) %>% arrange(desc(Quan)) %>% mutate_all(zerotoNA) %>% kable()
+
+```
+
+
+# Quantitative Research
+
+In this section, we selected researches used 'STATANAL, Modeling, Scenario, Systemanal' (four) methods. These are more loosely defined 'Quantitiative Analysis'. 
+
+Quantitative methods are used primarilry for prediction (41.4%). And regression (including limited dependent variable regression) was the most frequnetly used quantitative method(35.7%). 
+
+```{r QR}
+# Qunatitative Research
+QResearch.R=read_csv("QRESEARCH.csv")
+QResearch.R$Title=QResearch.R$Name
+QResearch.R$Qmethod=QResearch.R$ANALYSIS
+QResearch.R$Qmethod[str_detect(QResearch.R$ANALYSIS,fixed("MODEL"))]="MODEL"
+QResearch.R$Qmethod[str_detect(QResearch.R$ANALYSIS,fixed("CLUSTER"))|str_detect(QResearch.R$ANALYSIS,fixed("ANOVA"))]="CLUSTER/ANOVA"
+QResearch.R$Qmethod[str_detect(QResearch.R$ANALYSIS,fixed("LOGIT"))|str_detect(QResearch.R$ANALYSIS,fixed("PROBIT"))]="REGRESSION"
+QResearch.R$Qmethod[str_detect(QResearch.R$ANALYSIS,fixed("REGRESSION"))]="REGRESSION"
+QResearch.R$Qmethod[str_detect(QResearch.R$ETC,fixed("CVM"))]="CVM"
+
+QResearch.P=read_csv("ENVpapers_refine_qmethod_0813.csv") %>% select(1:15)
+
+QResearch.P$Qmethod=str_to_upper(QResearch.P$Qmethod)
+QResearch.P$PURPOSE=str_to_upper(QResearch.P$purpose)
+QResearch.P$Section=QResearch.P$Category
+QMethod=c("Modeling","STATANAL","Scenario","Measure")
+QResearch.P.net = QResearch.P[!is.na(match(QResearch.P$Method, QMethod)),]
+
+Q.R.small=QResearch.R %>% select(Section,Type,Method,Qmethod,PURPOSE)
+Q.P.small=QResearch.P.net %>% select(Section,Type,Method,Qmethod,PURPOSE)
+QResearch=rbind(Q.R.small,Q.P.small)
+ANAL.F=QResearch %>% group_by(PURPOSE,Qmethod) %>% summarise(N.ANA=n()) %>% ungroup() 
+ANAL.F %>% group_by(PURPOSE) %>% summarise(Sum.P=sum(N.ANA)) %>% arrange(desc(Sum.P)) %>% mutate(R.P=round(Sum.P/sum(Sum.P),digits=3)) %>% kable()
+ANAL.F %>% group_by(Qmethod) %>% summarise(Sum.A=sum(N.ANA)) %>% arrange(desc(Sum.A)) %>% mutate(R.A=round(Sum.A/sum(Sum.A),digits=3)) %>% kable()
+
+
+```
+
+## QMethod by Purpose
+
+Clearly, regression is the most favored method in casuality analysis. 73.7% of causality analysis used regression. Only 15.8% used Model and CGE, suggesting that analytical models is far less favored than regression in checking out causality. It is more adaptive to data than theoretical models. So, the result would be more dependent on data. 
+
+But when we evaluate overall quantitative effect of independent variables (Impulse Response), or predict future dependent variable (Prediction), theoretical models become as favored as regression (prediction. 20.7% vs. 20.7%.), if not more (Impulse Response. 37.5% vs. 25.0%). 
+
+Since regression analysis focuses on identifying effect of each feature on dependent variable, it becomes very strict on variables selection. If the model has unnecessary variables, the coefficient estimates become inefficient. If this unnecessary variable somehow violate orthogonality assumption, then the coefficient estimates become biased. To avoid bias and inefficiency, variables are selected carefully. But this process reduced the predictability of model. Even though econometric analysis emphasizes "economical significance", meaning the effect should strong enough to have some economic impact, it only requires the size of coefficient estimate should be large. Doesn't have anything to do with predictability.
+
+To the contrary, Machine Learning focuses on predictability. The model needs to capture complecated nonlinear effect to enhance predictability. To do that, it uses flecible functional form and numerous features. As far as we don't overfit so much as to harm predictability, we use as many features as possible to reduce prediction error. There's the fundamental difference in current quantitative analysis and Machine Learning.
+
+```{r QR.P}
+ANAL.F %>% group_by(Qmethod,PURPOSE) %>% summarise(Sum.A.P=sum(N.ANA)) %>% ungroup() %>% group_by(PURPOSE) %>% mutate(R.A.P=round(Sum.A.P/sum(Sum.A.P),digits=3)) %>% select(-3) %>% spread(key=PURPOSE,value=R.A.P) %>% mutate_all(zerotoNA) 
+
+ANAL.F.P=QResearch %>% 
+#  filter(ANALYSIS.BIG!="CVM") %>% 
+  group_by(PURPOSE,Qmethod) %>% 
+  summarise(N.ANA=n()) %>% 
+  ungroup() 
+
+ANAL.F.P %>% 
+  group_by(Qmethod,PURPOSE) %>% 
+  summarise(Sum.A.P=sum(N.ANA)) %>% 
+  ungroup() %>% 
+  group_by(PURPOSE) %>% 
+  mutate(Sum.P=sum(Sum.A.P)) %>%
+  filter(Sum.P>1) %>%
+  mutate(R.A.P=round(Sum.A.P/Sum.P,digits=3)) %>% 
+  select(-(3:4)) %>% 
+  spread(key=PURPOSE,value=R.A.P) %>% 
+  mutate_all(zerotoNA) %>%
+  kable()
+
+ANAL.F.P.G=ANAL.F.P %>% 
+  filter(PURPOSE!="MEASURE")%>%
+  group_by(Qmethod,PURPOSE) %>% 
+  summarise(Sum.A.P=sum(N.ANA)) %>% 
+  ungroup() %>% 
+  group_by(PURPOSE) %>% 
+  mutate(Sum.P=sum(Sum.A.P)) %>%
+  filter(Sum.P>1) %>%
+  mutate(R.A.P=round(Sum.A.P/Sum.P,digits=3)) 
+ANAL.F.P.graph= ANAL.F.P.G %>% ggplot(aes(x=Qmethod,y=R.A.P))+geom_col()+coord_flip()+facet_wrap(~PURPOSE)
+ANAL.F.P.graph
+ggsave(ANAL.F.P.graph,file="ANAL.F.P.combine.png")
+```
+
+
+
