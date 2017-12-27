@@ -30,4 +30,8 @@
 
     2. ENVpapers_summary.Rmd (분석코드)
     
-    여기서 작성 가능합니다.
+2017. 12.27 추가등재 파일
+
+     1. EnvResearch_0619.csv: 연구보고서 DB update
+     
+     2. EnvResearch_combied.Rmd: 연구보고서-학술논문 분석 코드 최종보고서 version
