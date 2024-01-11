@@ -1,0 +1,325 @@
+---
+title: "텍스트분석 뉴스레터: 2023년 2월"
+author: "sung won kang"
+date: '2023 5 17 '
+output:
+  html_document: default
+  pdf_document:
+    latex_engine: xelatex
+  word_document: default
+mainfont: NanumGothic
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+* 한국환경연구원 텍스트 수집 도구는 2023년 5월 25일까지 네이버 기사 데이터와 환경부 문헌 데이터를 제공한다.아래 뉴스레터에서는 2023년 2월 28일을 기점으로 30일 이전까지 수집한 자료를 사용한다. 
+
+
+
+
+
+### A. Text 데이터
+
+
+
+분석 대상 Text Data는 다음 두 종류의 문헌을 자료이다. 
+
+
+1. NAVER 환경 뉴스 : 2023년 1월 30일-2023년 2월 28일 NAVER 뉴스> '사회' >'환경' 부문에 게시된 뉴스
+2. 환경부 문건 : 2023년 1월 30일-2023년 2월 28일 환경부홈페이지에 게시된 환경부 보도자료 및 e-환경뉴스
+
+'NAVER 환경 뉴스'는 환경정책의 수요자인 국민의 환경과 관련된 관심사를 전달하는 텍스트 자료이다. 그리고 '환경부 문건'은 환경정책의 공급자인 환경부의 관심사를 전달하는 텍스트 자료이다. 이 두 자료의 키워드를 비교하여 환경정책 공급자의 관심사가 환경정책 수요자의 관심사에 조응하는지 여부를 점검한다.
+
+
+
+```{r lib,include=FALSE}
+library(tidyverse)
+library(tidytext)
+library(RcppMeCab)
+library(knitr)
+library(ggpubr)
+library(showtext)
+library(extrafont)
+font_add("nanum","NanumGothic.ttf")
+showtext_auto()
+```
+
+### B. 키워드 빈도분석
+
+ 한국환경연구원의 환경 빅데이터 플랫폼에서는 키워드를 단순빈도수 및 TF_IDF 값에 따라 추출한다. 키워드 추출 전단계로 파이선'konlpy'패키지를 활용한 형태소 분석 및 품사 태깅을 수행하고, 불용어(stopwords)를 제거한다.  2023년 1월 30일 - 2월 28일 게시 NAVER 환경뉴스 및 환경부 문건에서 단순빈도수가 높은 20개의 키워드를 추출한 결과는 아래 그림과 같다. 
+
+<!-- <center> -->
+<!-- ![**단순 빈도수 키워드 순위 비교**](Freq_0427.png) -->
+<!-- </center> -->
+
+
+
+
+```{r readdata, echo=FALSE}
+NAVER_TF=read.csv("./Data/2023_02_28/2023-02-28_30_NN_TF.txt",
+                  encoding="UTF-8",
+                  row.names=NULL,
+                  header=FALSE)[,-1]
+
+
+
+NAVER_TFIDF=read.csv("./Data/2023_02_28/2023-02-28_30_NN_norm_TF.txt",
+                  encoding="UTF-8",
+                  row.names=NULL,
+                  header=FALSE)[,-1]
+
+ME_TF=read.csv("./Data/2023_02_28/2023-02-28_30_ME_TF.txt",
+               encoding="UTF-8",
+               row.names=NULL,
+               header=FALSE)[,-1]
+
+ME_TFIDF=read.csv("./Data/2023_02_28/2023-02-28_30_ME_norm_TF.txt",
+               encoding="UTF-8",
+               row.names=NULL,
+               header=FALSE)[,-1]
+
+colnames(NAVER_TF)=c("키워드","빈도수")
+
+colnames(NAVER_TFIDF)=c("키워드","TFIDF")
+
+colnames(ME_TF)=c("키워드","빈도수")
+
+colnames(ME_TFIDF)=c("키워드","TFIDF")
+
+NAVER_TF=tibble(NAVER_TF)
+ME_TF=tibble(ME_TF)
+NAVER_TFIDF=tibble(NAVER_TFIDF)
+ME_TFIDF=tibble(ME_TFIDF)
+
+
+```
+
+
+
+```{r fig.showtext=TRUE,echo=FALSE, warning =FALSE}
+P_NAVFQ=NAVER_TF%>% head(n=20) %>%ungroup() %>% 
+  ggplot(aes(x=`빈도수`,y=reorder(`키워드`,`빈도수`))) + 
+  geom_col(show.legend=FALSE) +
+  ggtitle("NAVER 환경뉴스")+ labs(y="")+
+  geom_text(aes(label=`빈도수`),size=3.5,nudge_x = 18)+
+  theme_grey(base_family = "nanum")
+#print(P_NAVFQ)
+
+P_MEFQ=ME_TF %>%  head(n=20) %>%ungroup() %>% 
+  ggplot(aes(x=`빈도수`,y=reorder(`키워드`,`빈도수`))) + 
+  geom_col(show.legend=FALSE) + 
+  ggtitle("환경부 문건")+ labs(y="")+
+  geom_text(aes(label=`빈도수`),size = 3.5,nudge_x = 3)+
+  theme_grey(base_family = "nanum")
+
+
+
+
+P_FQ=ggarrange(P_NAVFQ,P_MEFQ,ncol=2,nrow=1)
+
+print(P_FQ)
+
+```
+
+
+눈에 띄는  차이는 두 가지로 정리할 수 있다.  
+
+* 첫째, 네이버 환경뉴스에는 빈도수가 높은 상위 20개 키워드 중 '케이블카','설악산','오색'등 설악산 오색 케이블카 관련 키워드 및 '오염수','원전' 등 원전관련 키워드가 발견되었지만 환경부 문건의 빈도수 상위 20개 키워드에는 이에 상응하는 키워드가 발견되지 않았다.
+
+* 둘째, 환경부 문건의 빈도수 상위 20개 키워드 중에는 '습지','생물' 등 자연환경 관련 키워드, '가뭄','용수' 등 수자원 관련 키워드, '규제','보조금','협약' 등 환경정책 도구 관련 키워드, 그리고 '안전','차량' 등의 키워드가 포함되지만 네이버 환경뉴스에서는 이에 상응하는 키워드가 발견되지 않았다. 
+
+
+```{r TFIDFFIGURE, message=FALSE, echo=FALSE, warning =FALSE}
+
+P_NAVTFIDF=NAVER_TFIDF%>% head(n=20) %>%ungroup() %>% 
+  ggplot(aes(x=TFIDF,y=reorder(`키워드`,TFIDF))) + 
+  geom_col(show.legend=FALSE) + 
+  ggtitle("NAVER 환경뉴스")+ labs(y="")+
+  geom_text(aes(label=round(TFIDF,1)),size=3.5, nudge_x=2)
+#+
+  #theme_grey(base_family = "nanum")+ 
+  #theme(text = element_text(size = 12)) 
+
+P_METFIDF=ME_TFIDF %>%  head(n=20) %>%ungroup() %>% 
+  ggplot(aes(x=TFIDF,y=reorder(`키워드`,TFIDF))) + 
+  geom_col(show.legend=FALSE) + 
+  ggtitle("환경부 문건")+ labs(y="")+
+  geom_text(aes(label=round(TFIDF,1)),size=3.5, nudge_x=0.2)
+#+
+  #theme_grey(base_family = "nanum")+ 
+  #theme(text = element_text(size = 12)) 
+
+
+P_TFIDF=ggarrange(P_NAVTFIDF,P_METFIDF,ncol=2,nrow=1)
+#P_TFIDF2=annotate_figure(P_TFIDF,
+               #top = text_grob("Visualizing Tooth Growth", color = "red", face = "bold", size = 14),
+#               bottom = text_grob("그림 2. TFIDF 키워드 순위 비교", x=0.2)#hjust = 1, x = 1),
+               #left = text_grob("Figure arranged using ggpubr", color = "green", rot = 90),
+               #right = text_grob(bquote("Superscript: ("*kg~NH[3]~ha^-1~yr^-1*")"), rot = 90),
+               #fig.lab = "Figure 1", fig.lab.face = "bold"
+#)
+
+
+print(P_TFIDF)
+ggsave(file="P_TFIDF_220929_7.png",P_TFIDF)
+#ggsave(file="P_NAVTFIDF.png",P_NAVTFIDF)
+#ggsave(file="P_METFIDF.png",P_METFIDF)
+
+```
+
+<!-- <center> -->
+<!-- ![**TF_IDF 키워드 순위 비교**](P_TFIDF_220929_7.png) -->
+<!-- </center> -->
+
+
+
+이와 같은 경향은 TF_IDF 값이 높은 20개의 키워드를 추출하여 비교하여도 확인된다. Figure 2는 TF_IDF를 기준으로 추출한 상위 20개 키워드의 TF_IDF 값을 보여준다. Figure 2에서도 확인할 수 있듯이 
+
+* "케이블카","설악산","오색","오염수" 와 같은 키워드는 NAVER 뉴스에서만 찾아볼 수 있고
+
+* "습지","규제","안전","가뭄","생물","국립공원","용수","구제"와 같은 키워드들은 환경부 문건에서만 찾아 볼 수 있다.
+
+
+<!-- ### C. 키워드 네트워크 분석 -->
+
+
+
+
+<!-- 키워드 네트워크 분석은 키워드간 관계를 연관분석(장바구니 분석)을 통해서 파악하고 이를 네트워크 그래프로 표현하는 분석이다. 한국환경연구원의 네트워크 분석에 적용돠는 모수의 값은 서포트 0.005, 컨피던스 0.1, 시드 1001이다. Figure 3는 키워드 네트워크 분석의 결과를 보여준다.  -->
+
+<!-- <center> -->
+<!-- ![**키워드 네트워크 비교**](Wordnetwork_0427.png) -->
+<!-- </center> -->
+
+
+<!-- 키워드 네트워크 비교 결과 다음 두 가지 특징이 발견되었다.  -->
+
+<!-- * 첫째, 미세먼지 관련 이슈가 네이버 환경뉴스에서는 가장 연관성이 큰 네트워크를 형성하였다. 환경부 문건에서는 이에 상응하는 네트워크는 발견되지 않았다. -->
+<!--   + 이 결과는 미세먼지 관련 이슈가 환경부 문건에서 자주 출현하였지만 여타 이슈와 연관성 없이 단독으로 출현하는 경우가 많았음을 시사한다.  -->
+
+<!-- * 둘째. 비닐봉투 관련 이슈가 네이버 환경뉴스에서는 두번째로 연관성이 큰 네트워크를 형성하였다. 환경부 문건에서는 이에 상응하는 네트워크는 바나나-속비닐-혼란과 관계된 네트워크이다. 네이버 환경뉴스의 대형마트-비닐봉투 네트워크에 비해서 환경부의 바나나-속비닐-혼란 네트워크는 연관성이 제한적이었다.   -->
+<!--   + 이 결과는 키워드 빈도 수 분석에서 발견된 현상과 일치한다. -->
+
+<!-- * 셋째. 환경부 문건에서 출현 빈도수가 높았던 생태계 관련 키워드들은 키워드 네트워크를 형성하지 못하였다.   -->
+<!--   + 이 결과는 생태계 관련 이슈가 환경부 문건에서 자주 출현하였지만 여타 이슈와의 연관성 없이 단독으로 출현하는 경우가 많았음을 시사한다. -->
+
+
+### C. 키워드 관련 뉴스
+
+
+네이버 환경뉴스 키워드와 환경부 문건 키워드간의 차이의 원인을 파악하기 위해서 두 문헌에서 단순빈도가  가장 높은 10개 키워드 중 서로 상이한 키워드가 포함된 문헌의 제목들을 비교하였다. 
+
+* 네이버 환경뉴스에서 단순빈도가 높은 10개 키워드 중 환경부 문건의 단순빈도가 높은 20개 키워드에 포함되지 않은 키워드는 [`r setdiff(NAVER_TF$키워드[1:10],ME_TF$키워드[1:20])`]이다. 
+
+* 환경부 문헌에서 단순빈도가 높은 10개 키워드 중 네이버 환경뉴스에서  단순빈도가 높은 20개 키워드에 포함되지 않은 키워드는 [`r setdiff(ME_TF$키워드[1:10],NAVER_TF$키워드[1:20])`]이다.
+
+
+
+
+
+```{r titleload, echo=FALSE, warning =FALSE}
+#library(readxl)
+#read_excel
+#TITLE_NN_7=read.csv("./Data/2022-09-29_7_NN_idx.txt",header=FALSE) 
+#TITLE_ME_7=read.csv("./Data/2022-09-29_7_ME_idx.txt",header=FALSE) 
+#TITLE_NN_14=read.csv("./Data/2022-09-29_14_NN_idx.txt",header=FALSE) 
+#TITLE_ME_14=read.csv("./Data/2022-09-29_14_ME_idx.txt",header=FALSE) 
+TITLE_NN_30=read.csv("./Data/2023_02_28/2023-02-28_30_NN_idx.txt",header=FALSE) 
+TITLE_ME_30=read.csv("./Data/2023_02_28/2023-02-28_30_ME_idx.txt",header=FALSE) 
+
+# TITLE_NN_7$GAP=7
+# TITLE_ME_7$GAP=7
+# 
+# TITLE_NN_14$GAP=14
+# TITLE_ME_14$GAP=14
+
+TITLE_NN_30$GAP=30
+TITLE_ME_30$GAP=30
+
+TITLE_NN=TITLE_NN_30 %>% select(c("V3","GAP")) %>% mutate(SOURCE="NAVER")
+TITLE_ME=TITLE_ME_30 %>% select(c("V3","GAP")) %>% mutate(SOURCE="ME")
+TITLES =rbind(TITLE_NN,TITLE_ME)
+colnames(TITLES)=c("Title","GAP","SOURCE")
+```
+
+1. '케이블카'를 제목에 포함하는 기사들은 설악산 오색케이블카의 환경영향 관련 논쟁을 소개한 기사가 대부분이다. 같은 기간 환경부 문헌 제목에 '케이블카','설악산','오색'을 포함하는 문헌은 '설악산국립공원 오색삭도 설치사업 환경영향평가 협의 완료' 1건에 그친다.
+
+```{r title1, echo=FALSE, warning =FALSE}
+#TITLES=read_excel("./Data/titles_20230417.xlsx",sheet=1)
+#TITLES=TITLES %>% mutate(ID=1) %>% group_by(KEY) %>% mutate(SE=cumsum(ID)) %>% filter(SE<=3)
+R1=TITLES %>% filter(SOURCE=="NAVER") %>%
+  filter(GAP==30) %>%
+  filter(str_detect(Title,"케이블카")) %>%
+  select(Title) %>% head(10)
+
+kable(R1)
+
+```
+
+
+2. '오염수'을 제목에 포함하는 기사들은 일본 후쿠시마 원전 오염수 방류와 관련된 기사가 주종을 이룬다.  같은 기간 환경부 문건 중 '오염수'를 제목에 포함한 문건은 존재하지 않았다.
+
+```{r title2, echo=FALSE, warning =FALSE}
+
+R2=TITLES %>% filter(SOURCE=="NAVER") %>%
+  filter(GAP==30) %>%
+  filter(str_detect(Title,"오염수")
+         #|str_detect(Title,"폐기물")
+         ) %>%
+  select(Title) %>% head(n=10)
+kable(R2)
+
+```
+
+
+환경부 문헌에서 가장 빈도가 높은 10개 키워드 중 네이버 뉴스에서 가장 빈도가 높은 키워드 20개에 포함되지 않은 키워드는 "안전", "녹색", "습지","협약","규제","보조금"이다. 2023년 3월 2일부터 3월 31일까지 게시된 환경부 문헌 중 이들 키워드를 제목에 포함하는 환경부 문헌은 다음과 같다. 
+
+1. '안전'을 제목에 포함하는 문헌은 수질관련 문헌 1건, 굴뚝 시료채취 관련 문헌 1건으로 특정한 추세를 보이지 않았다.
+```{r titleME1, echo=FALSE, warning =FALSE}
+R1_ME=TITLES %>% filter(SOURCE=="ME") %>%
+  filter(GAP==30) %>%
+  filter(str_detect(Title,"안전")) %>%
+  select(Title)
+kable(R1_ME)
+
+```
+2. '녹색'을 제목에 포함하는 문헌들은 녹색산업 관련 문건이 1건, 녹색금융 관련 문건이 1건이어서 기후변화와 관련된 녹색경제 활성화와 관련된 문건으로 구성되었다.
+```{r titleME2, echo=FALSE, warning =FALSE}
+R2_ME=TITLES %>% filter(SOURCE=="ME") %>%
+  filter(GAP==30) %>%
+  filter(str_detect(Title,"녹색")) %>%
+  select(Title)
+kable(R2_ME)
+
+```
+
+3. '규제'를 제목에 포함하는 문헌들은 환경부문 규제혁신 관련 문헌 2건으로 파악되었다.   
+```{r titleME3, echo=FALSE, warning =FALSE}
+R2_ME=TITLES %>% filter(SOURCE=="ME") %>%
+  filter(GAP==30) %>%
+  filter(str_detect(Title,"규제")) %>%
+  select(Title)
+kable(R2_ME)
+
+```
+
+4. '습지','보조금'을 제목에 포함하는 문헌들은 각각 습지정책 관련 문헌 2건,   전기차 보조금 관련 문헌이 1건이었다. 
+```{r titleME4, echo=FALSE, warning =FALSE}
+R2_ME=TITLES %>% filter(SOURCE=="ME") %>%
+  filter(GAP==30) %>%
+  filter(str_detect(Title,"습지")|str_detect(Title,"보조금")) %>%
+  select(Title)
+kable(R2_ME)
+
+```
+
+### D. 정리
+
+2023년 1월 30일-2023년 2월 28일 게시된 네이버 환경뉴스와 환경부 문헌을 비교한 결과를 요약하면 다음과 같다.
+
+1. 네이버 기사로부터 설악산 오색삭도(오색케이블카) 사업 및 후쿠시마 원전 오염수 방류에 대한 국민들의 관심이 많은데 이와 관련된 환경부 문건의 비중은 낮은 것으로 파악되었다. 반면 설악산 오색삭도 관련 환경부 문헌은 환경영향평가 종료와 같은 정보 전달에 초점을 두고 있다. 이는 후쿠시마 원전 오염수 방료에 대한 국민적인 관심은 많은데 환경부의 정책적 대응은 활발하지 못함을 시사한다. 또한 환경영향평가가 일상화되어서 개별 사안에 대한 국민적인 관심을 현재의 환경영향평가 정책 운용 과정에서 흡수하고 있음을 보여준다.
+
+2. 환경부 문헌으로부터 이 당시 환경부는 녹색경제 활성화, 환경규제 개선 등을 추진하였음을 알 수 있다. 녹색경제 활셩화 정책은 당시 NAVER 뉴스에 출현빈도가 높았던 '기후' 에 대한 관심에 조응하는 정책이라고 할 수 있다.그러나 환경규제 개선 정책은 NAVER 뉴스의 관심을 얻지 못하였다. 
